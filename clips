@@ -1,0 +1,31 @@
+
+-- Program
+  Prog.       Program       ::= [Def];
+  
+  
+-- Definitions  
+  DefFun.     Def           ::= Ident [Ident] "=" Exp ";" ;
+  terminator  Def           "" ;
+  
+-- Ident
+  terminator  Ident         "" ;  
+    
+  
+  
+-- Expressions
+  ELambda.    Exp           ::= "\" Ident "->" Exp ;
+
+  EIfElse.    Exp           ::= "if" Exp1 "then" Exp1 "else" Exp1 ;
+  EPlus.      Exp1          ::= Exp1 "+" Exp2 ; 
+  EMinus.     Exp1          ::= Exp1 "-" Exp2 ;
+  ELessThan.  Exp1          ::= Exp1 "<" Exp2 ;
+  EApply.     Exp2          ::= Exp2 Exp3 ;
+  EInteger.   Exp3          ::= Integer ;
+  EIdent.     Exp3          ::= Ident ;
+  
+  coercions   Exp 3 ;
+  
+  
+-- Comments
+  comment "//" ;
+  
