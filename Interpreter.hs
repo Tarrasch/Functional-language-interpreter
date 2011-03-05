@@ -45,7 +45,7 @@ liftIntOp op mv1 mv2 = do
   (VInt i1) <- mv1   
   (VInt i2) <- mv2   
   return $ VInt $ i1 `op` i2
-
+ 
 ----------------------------- Substituting -------------------------------  
 
 
