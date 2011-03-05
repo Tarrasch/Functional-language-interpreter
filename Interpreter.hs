@@ -36,7 +36,7 @@ interpret (Prog defs) = case mainExp of
 
 ----------------------------- Value -------------------------------  
 
-data Value = VLambda Ident Exp
+data Value = VClojure Exp Env
            | VInt Integer
 
 liftIntOp :: (Integer -> Integer -> Integer) -> 
@@ -50,6 +50,11 @@ liftIntOp op mv1 mv2 = do
  
 
 ----------------------------- Interpreting -------------------------------  
+
+calculate :: Value -> MyMonad Int
+calculate (VInt i)            = return i
+calculate (VClojure exp env') = local (env'++) (calcExp exp)
+
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
