@@ -51,17 +51,17 @@ liftIntOp op mv1 mv2 = do
 
 ----------------------------- Interpreting -------------------------------  
 
-calculate :: Value -> MyMonad Int
+calculate :: Value -> MyMonad Integer
 calculate (VInt i)            = return i
-calculate (VClojure exp env') = local (env'++) (calcExp exp)
+calculate (VClojure exp env') = local (env'++) (calcExp exp) >>= calculate
 
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
   ELambda id exp        -> fail "Found unapplied Lambda abstraction"
   EApply eFun eArg      -> do
-    VLambda id eBody <- calcExp eFun
-    local (addBinding id eArg) (calcExp eBody)    
+    ELambda id eBody <- return eFun
+    return $ VClojure eBody [(id, eArg)]
   EIfElse eCond e1 e2   -> do
     VInt b <- calcExp eCond
     calcExp (if b /= 0 then e1 else e2)    
