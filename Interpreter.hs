@@ -54,7 +54,7 @@ liftIntOp op mv1 mv2 = do
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
   ELambda id exp        -> return (VLambda id exp)
-  EApply eFubn eArg     -> do
+  EApply eFun eArg      -> do
     VLambda id eBody <- calcExp eFun
     local (addBinding id eArg) (calcExp eBody)    
   EIfElse eCond e1 e2   -> do
@@ -68,7 +68,7 @@ calcExp e = case e of
     mExp <- asks $ envLookup id
     case mExp of
       Just exp -> calcExp exp
-      Nothing  -> fail "variable was unbound when looking up"
+      Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
 
 
 {-
