@@ -68,7 +68,7 @@ whnf e = case e of
     mExp <- asks $ envLookup id
     case mExp of
       Just exp -> whnf exp
-      Nothing  -> fail "variable was unbound when looking up"
+      Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
 
   where intLessThan i1 i2 = toInteger . fromEnum $ i1 < i2
 
