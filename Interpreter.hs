@@ -57,10 +57,10 @@ calculate (VClojure exp env') = local (env'++) (calcExp exp) >>= calculate
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
-  ELambda id exp        -> fail "Found unapplied Lambda abstraction"
+  ELambda id exp        -> return $ VClojure (ELambda id exp) []
   EApply eFun eArg      -> do
-    ELambda id eBody <- return eFun
-    return $ VClojure eBody [(id, eArg)]
+    VClojure (ELambda id eBody) env' <- calcExp eFun
+    return $ VClojure eBody ((id, eArg) : env')
   EIfElse eCond e1 e2   -> do
     VInt b <- calcExp eCond
     calcExp (if b /= 0 then e1 else e2)    
