@@ -21,7 +21,7 @@ import Control.Monad.Identity
 
 type MyMonad a =  (ReaderT FullEnv
                     (ErrorT ErrorMessage
-                      Identity))
+                      IO))
                         a
 
 
@@ -35,10 +35,9 @@ type ErrorMessage = String
 -- | The most sensible unwrapper, the Symbolic Table and the expected return 
 --   type are supplied for parameters, and the execution starts with an empty
 --   variable-environment.
-runMonad :: Env -> MyMonad a -> Either ErrorMessage a
+runMonad :: Env -> MyMonad a -> IO (Either ErrorMessage a)
 runMonad env =  
-            runIdentity
-          . runErrorT
+            runErrorT
           . startReaderFrom env
   where
     startReaderFrom :: env -> ReaderT env m a -> m a

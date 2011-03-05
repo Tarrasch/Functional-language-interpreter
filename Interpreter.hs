@@ -28,7 +28,7 @@ import Env
 --   The IO contains no side effects, it's safe to use unsafePerformIO on it.
 interpret :: Program -> IO (Either ErrorMessage Integer)
 interpret (Prog defs) = case mainExp of
-                          Just exp -> return $ runMonad env $ (calcExp exp) >>= calculate
+                          Just exp -> runMonad env $ (calcExp exp) >>= calculate
                           Nothing  -> return $ Left "no main is defined"
   where env     = defsToEnvironment defs
         mainExp = envLookup (Ident "main") env
@@ -41,8 +41,9 @@ data Value = VClojure Exp Env
 liftIntOp :: (Integer -> Integer -> Integer) -> 
              (MyMonad Value -> MyMonad Value -> MyMonad Value)
 liftIntOp op mv1 mv2 = do 
-  (VInt i1) <- mv1   
-  (VInt i2) <- mv2   
+  asks (map fst) >>= (\x -> liftIO $ print x)  
+  i1 <- mv1 >>= calculate   
+  i2 <- mv2 >>= calculate   
   return $ VInt $ i1 `op` i2
  
 ----------------------------- Substituting -------------------------------  
