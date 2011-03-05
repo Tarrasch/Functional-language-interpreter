@@ -58,7 +58,7 @@ calculate (VClojure exp env') = local (env'++) (calcExp exp)
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
-  ELambda id exp        -> return (VLambda id exp)
+  ELambda id exp        -> fail "Found unapplied Lambda abstraction"
   EApply eFun eArg      -> do
     VLambda id eBody <- calcExp eFun
     local (addBinding id eArg) (calcExp eBody)    
