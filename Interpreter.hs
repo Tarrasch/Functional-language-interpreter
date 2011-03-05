@@ -28,11 +28,10 @@ import Env
 --   The IO contains no side effects, it's safe to use unsafePerformIO on it.
 interpret :: Program -> IO (Either ErrorMessage Integer)
 interpret (Prog defs) = case mainExp of
-                          Just exp -> return $ fixIt $ runMonad env (calcExp exp)
+                          Just exp -> return $ runMonad env $ (calcExp exp) >>= calculate
                           Nothing  -> return $ Left "no main is defined"
   where env     = defsToEnvironment defs
         mainExp = envLookup (Ident "main") env
-        fixIt   = fmap (\(VInt i) -> i)
 
 ----------------------------- Value -------------------------------  
 
