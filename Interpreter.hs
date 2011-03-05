@@ -41,7 +41,7 @@ data Value = VClojure Exp Env
 liftIntOp :: (Integer -> Integer -> Integer) -> 
              (MyMonad Value -> MyMonad Value -> MyMonad Value)
 liftIntOp op mv1 mv2 = do 
-  asks (map fst) >>= (\x -> liftIO $ print x)  
+  asks (lookup (Ident "a")) >>= debug 
   i1 <- mv1 >>= calculate   
   i2 <- mv2 >>= calculate   
   return $ VInt $ i1 `op` i2
@@ -52,12 +52,13 @@ liftIntOp op mv1 mv2 = do
 ----------------------------- Interpreting -------------------------------  
 
 calculate :: Value -> MyMonad Integer
-calculate (VInt i)            = return i
-calculate (VClojure exp env') = local (env'++) (calcExp exp) >>= calculate
+calculate (VInt i)                   = return i
+calculate (VClojure (ELambda _ _) _) = fail "Can't calculate a lambda abstraction!"
+calculate (VClojure exp env')        = local (env'++) (calcExp exp) >>= calculate
 
 
 calcExp :: Exp -> MyMonad Value
-calcExp e = case e of
+calcExp e = debugTree e >> case e of
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
@@ -82,3 +83,5 @@ whnf (EApply (ELambda id eBody) eArg) = e
 whnf e = e
 -}
 
+debug = liftIO . print
+debugTree = liftIO . print . printTree
