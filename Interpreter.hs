@@ -28,7 +28,7 @@ import Env
 --   The IO contains no side effects, it's safe to use unsafePerformIO on it.
 interpret :: Program -> IO (Either ErrorMessage Integer)
 interpret (Prog defs) = case mainExp of
-                          Just exp -> runMonad env $ (calcExp exp) >>= calculate
+                          Just exp -> runMonad env (calculate exp)
                           Nothing  -> return $ Left "no main is defined"
   where env     = defsToEnvironment defs
         mainExp = envLookup (Ident "main") env
@@ -61,7 +61,8 @@ calcExp e = debugTree e >> case e of
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
-    return $ VClojure eBody ((id, eArg) : env')
+    vArg <- calcExp eArg
+    return $ VClojure eBody ((id, vArg) : env')
   EIfElse eCond e1 e2   -> do
     b <- calcExp eCond >>= calculate
     calcExp (if b /= 0 then e1 else e2)    
@@ -72,7 +73,7 @@ calcExp e = debugTree e >> case e of
   EIdent id             -> do
     mExp <- asks $ envLookup id
     case mExp of
-      Just exp -> calcExp exp
+      Just exp -> return exp
       Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
 
 debug :: Show a => a -> MyMonad ()
