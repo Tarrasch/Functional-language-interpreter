@@ -14,6 +14,10 @@ import Absgrammar
 
 type Env = [(Ident, Value)]
 
+data Value = VClojure Exp Env
+           | VInt Integer
+  deriving Show
+
 ----------------------- Constants ------------------------
 
 emptyEnv :: Env
