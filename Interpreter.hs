@@ -30,7 +30,8 @@ interpret :: Program -> IO (Either ErrorMessage Integer)
 interpret (Prog defs) = case mainExp of
                           Just exp -> runMonad env $ (calcExp exp) >>= calculate
                           Nothing  -> return $ Left "no main is defined"
-  where env     = defsToEnvironment defs
+  where expEnv  = defsToEnvironment defs
+        env     = map (fmap (local env . calcExp)) expEnv
         mainExp = envLookup (Ident "main") env
 
 ----------------------------- Value -------------------------------  
