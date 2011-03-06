@@ -38,14 +38,15 @@ inScope x = elem x . map fst
 
 -- | Search after a name in all the scopes, if there are more than one variable 
 --   with the same name, the one latest declared is returned.
-envLookup :: Ident -> Env -> Maybe Exp
+envLookup :: Ident -> Env -> Maybe Value
 envLookup = lookup
 
 
 ----------------------- Other ------------------------
 
-defsToEnvironment :: [Def] -> [(Ident, Exp)]
-defsToEnvironment = map aux
+defsToEnvironment :: [Def] -> Env
+defsToEnvironment = map (fmap exp2Value . aux)
  where aux :: Def -> (Ident, Exp)
        aux (DefFun fname idents exp0) = (fname, foldr ELambda exp0 idents)
-
+       exp2Value :: Exp -> Value
+       exp2Value exp = VClojure exp []
