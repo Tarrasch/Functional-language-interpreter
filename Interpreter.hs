@@ -58,7 +58,7 @@ calculate val = debug val >> case val of
   (VInt i)                   -> return i
   (VClojure (ELambda _ _) _) -> fail "Can't calculate a lambda abstraction!"
   (VClojure exp env')        -> local (env'++) $ (calcExp exp) >>= calculate
-
+ 
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = debugTree e >> case e of
