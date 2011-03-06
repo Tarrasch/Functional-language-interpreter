@@ -61,24 +61,10 @@ calculate val = debug val >> case val of
 
 
 calcExp :: Exp -> MyMonad Value
-calcExp e = debugTree e >> case e of
+calcExp e = debugTree e >> whnf e >>= \e' -> case e' of
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
-  EApply eFun eArg      -> do
-    VClojure (ELambda id eBody) env' <- calcExp eFun
-    eArg' <- whnf eArg
-    return $ VClojure eBody ((id, eArg') : env')
-  EIfElse eCond e1 e2   -> do
-    b <- calcExp eCond >>= calculate
-    calcExp (if b /= 0 then e1 else e2)    
-  EPlus e1 e2           -> liftIntOp (+) (calcExp e1) (calcExp e2)
-  EMinus e1 e2          -> liftIntOp (-) (calcExp e1) (calcExp e2)
-  ELessThan e1 e2       -> liftIntOp intLessThan (calcExp e1) (calcExp e2)
   EInteger n            -> return $ VInt n
-  EIdent id             -> do
-    mExp <- asks $ envLookup id
-    case mExp of
-      Just exp -> calcExp exp
-      Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
+  otherwise             -> fail "whnf didn't get to whnf" 
 
 
 whnf :: Exp -> MyMonad Exp
