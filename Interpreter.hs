@@ -62,6 +62,11 @@ calculate val = debug val >> case val of
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = debugTree e >> whnf e >>= \e' -> case e' of
+  EApply eFun eArg      -> do
+    VClojure (ELambda id eBody) env' <- calcExp eFun
+    eArg' <- whnf eArg
+    return $ VClojure eBody ((id, eArg) : env') 
+    --local (((id, eArg') : env') ++) (whnf eBody)
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
   EInteger n            -> return $ VInt n
   otherwise             -> fail "whnf didn't get to whnf" 
@@ -69,10 +74,6 @@ calcExp e = debugTree e >> whnf e >>= \e' -> case e' of
  
 whnf :: Exp -> MyMonad Exp
 whnf e = case e of
-  EApply eFun eArg      -> do
-    VClojure (ELambda id eBody) env' <- calcExp eFun
-    eArg' <- whnf eArg
-    local (((id, eArg') : env') ++) (whnf eBody)
   EIfElse eCond e1 e2   -> do
     b <- calcExp eCond >>= calculate
     whnf (if b /= 0 then e1 else e2)    
