@@ -65,7 +65,8 @@ calcExp e = debugTree e >> case e of
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
-    return $ VClojure eBody ((id, eArg) : env')
+    eArg' <- whnf eArg
+    return $ VClojure eBody ((id, eArg') : env')
   EIfElse eCond e1 e2   -> do
     b <- calcExp eCond >>= calculate
     calcExp (if b /= 0 then e1 else e2)    
@@ -80,12 +81,26 @@ calcExp e = debugTree e >> case e of
       Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
 
 
-{-
 whnf :: Exp -> MyMonad Exp
-whnf (EApply (ELambda id eBody) eArg) = e
-whnf e = e
--}
-
+whnf e = case e of
+  EApply eFun eArg      -> do
+    VClojure (ELambda id eBody) env' <- calcExp eFun
+    local (((id, eArg) : env') ++) (whnf eBody)
+  EIfElse eCond e1 e2   -> do
+    b <- calcExp eCond >>= calculate
+    whnf (if b /= 0 then e1 else e2)    
+  EPlus e1 e2           -> liftIntOp' (+) (calcExp e1) (calcExp e2)
+  EMinus e1 e2          -> liftIntOp' (-) (calcExp e1) (calcExp e2)
+  ELessThan e1 e2       -> fail "< not defined"
+  EIdent id             -> do
+    mExp <- asks $ envLookup id
+    case mExp of
+      Just exp -> whnf exp
+      Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
+  integerOrAbstraction  -> return integerOrAbstraction
+  
+  where liftIntOp' f a b = liftIntOp f a b >>= (\(VInt i) -> return $ EInteger i)
+  
 debug :: Show a => a -> MyMonad ()
 debug = liftIO . print
 
