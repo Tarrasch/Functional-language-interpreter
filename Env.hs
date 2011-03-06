@@ -12,7 +12,7 @@ import Absgrammar
 
 ------------------------ Types ------------------------
 
-type Env = [(Ident, Exp)]
+type Env = [(Ident, Value)]
 
 ----------------------- Constants ------------------------
 
@@ -22,7 +22,7 @@ emptyEnv = []
 
 ----------------------- Modifiers ------------------------
 
-addBinding :: Ident -> Exp -> Env -> Env
+addBinding :: Ident -> Value -> Env -> Env
 addBinding x val = ((x, val):)
 
 
@@ -40,7 +40,7 @@ envLookup = lookup
 
 ----------------------- Other ------------------------
 
-defsToEnvironment :: [Def] -> Env
+defsToEnvironment :: [Def] -> [(Ident, Exp)]
 defsToEnvironment = map aux
  where aux :: Def -> (Ident, Exp)
        aux (DefFun fname idents exp0) = (fname, foldr ELambda exp0 idents)
