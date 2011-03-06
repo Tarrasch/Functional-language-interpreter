@@ -77,4 +77,5 @@ calcExp e = case e of
 debug :: Show a => a -> MyMonad ()
 debug = liftIO . print
 
+debugTree :: Exp -> MyMonad ()
 debugTree = liftIO . print . printTree
