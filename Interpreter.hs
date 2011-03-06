@@ -75,13 +75,6 @@ calcExp e = debugTree e >> case e of
       Just exp -> calcExp exp
       Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
 
-
-{-
-whnf :: Exp -> MyMonad Exp
-whnf (EApply (ELambda id eBody) eArg) = e
-whnf e = e
--}
-
 debug :: Show a => a -> MyMonad ()
 debug = liftIO . print
 
