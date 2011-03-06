@@ -36,10 +36,6 @@ interpret (Prog defs) = case mainExp of
 
 ----------------------------- Value -------------------------------  
 
-data Value = VClojure Exp Env
-           | VInt Integer
-  deriving Show
-
 liftIntOp :: (Integer -> Integer -> Integer) -> 
              (MyMonad Value -> MyMonad Value -> MyMonad Value)
 liftIntOp op mv1 mv2 = do 

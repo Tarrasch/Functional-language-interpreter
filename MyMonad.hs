@@ -16,20 +16,6 @@ import Control.Monad.Identity
 
 -- Everything is exported deliberetly.
 
-
------------------------- Types ------------------------
-
-type MyMonad a =  (ReaderT FullEnv
-                    (ErrorT ErrorMessage
-                      IO))
-                        a
-
-
-type FullEnv = Env -- remove or fix laater
- 
-type ErrorMessage = String
-
-
 --------------------------- Running and Unwrapping --------------------------
 
 -- | The most sensible unwrapper, the Symbolic Table and the expected return 

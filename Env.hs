@@ -2,6 +2,7 @@ module Env where
 
 import Absgrammar
 
+import Types
 
 ------------------------ Notes & Overview ------------------------
 
@@ -10,15 +11,11 @@ import Absgrammar
 -- The functions defined in this module are all functions working with Env.
 
 
------------------------- Types ------------------------
-
-type Env = [(Ident, Value)]
-
 ----------------------- Constants ------------------------
 
 emptyEnv :: Env
-emptyEnv = []
 
+emptyEnv = []
 
 ----------------------- Modifiers ------------------------
 
@@ -34,7 +31,7 @@ inScope x = elem x . map fst
 
 -- | Search after a name in all the scopes, if there are more than one variable 
 --   with the same name, the one latest declared is returned.
-envLookup :: Ident -> Env -> Maybe Exp
+envLookup :: Ident -> Env -> Maybe LookupType
 envLookup = lookup
 
 
