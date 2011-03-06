@@ -55,7 +55,7 @@ calculate val = case val of
 
 
 calcExp :: Exp -> MyMonad Value
-calcExp e = debugTree e >> case e of
+calcExp e = case e of
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
