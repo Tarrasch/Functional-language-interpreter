@@ -37,11 +37,12 @@ interpret (Prog defs) = case mainExp of
 
 data Value = VClojure Exp Env
            | VInt Integer
+  deriving Show
 
 liftIntOp :: (Integer -> Integer -> Integer) -> 
              (MyMonad Value -> MyMonad Value -> MyMonad Value)
 liftIntOp op mv1 mv2 = do 
-  asks length >>= debug
+  asks (length) >>= debug
   asks (lookup (Ident "a")) >>= debug
   i1 <- mv1 >>= calculate   
   i2 <- mv2 >>= calculate   
@@ -53,9 +54,10 @@ liftIntOp op mv1 mv2 = do
 ----------------------------- Interpreting -------------------------------  
 
 calculate :: Value -> MyMonad Integer
-calculate (VInt i)                   = return i
-calculate (VClojure (ELambda _ _) _) = fail "Can't calculate a lambda abstraction!"
-calculate (VClojure exp env')        = local (env'++) (calcExp exp) >>= calculate
+calculate val = debug val >> case val of 
+  (VInt i)                   -> return i
+  (VClojure (ELambda _ _) _) -> fail "Can't calculate a lambda abstraction!"
+  (VClojure exp env')        -> local (env'++) $ (calcExp exp) >>= calculate
 
 
 calcExp :: Exp -> MyMonad Value
