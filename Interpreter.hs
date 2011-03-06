@@ -66,7 +66,7 @@ calcExp e = debugTree e >> whnf e >>= \e' -> case e' of
   EInteger n            -> return $ VInt n
   otherwise             -> fail "whnf didn't get to whnf" 
 
-
+ 
 whnf :: Exp -> MyMonad Exp
 whnf e = case e of
   EApply eFun eArg      -> do
