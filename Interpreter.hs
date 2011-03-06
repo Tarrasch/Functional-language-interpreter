@@ -42,8 +42,6 @@ data Value = VClojure Exp Env
 liftIntOp :: (Integer -> Integer -> Integer) -> 
              (MyMonad Value -> MyMonad Value -> MyMonad Value)
 liftIntOp op mv1 mv2 = do 
-  asks (length) >>= debug
-  asks (lookup (Ident "x")) >>= debug
   i1 <- mv1 >>= calculate   
   i2 <- mv2 >>= calculate   
   return $ VInt $ i1 `op` i2
@@ -64,6 +62,7 @@ calcExp :: Exp -> MyMonad Value
 calcExp e = debugTree e >> whnf e >>= \e' -> case e' of
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
+    
     eArg' <- whnf eArg
     return $ VClojure eBody ((id, eArg') : env') 
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
