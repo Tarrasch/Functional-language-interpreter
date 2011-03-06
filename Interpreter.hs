@@ -66,13 +66,14 @@ calcExp e = case e of
     calcExp (if b /= 0 then e1 else e2)    
   EPlus e1 e2           -> liftIntOp (+) (calcExp e1) (calcExp e2)
   EMinus e1 e2          -> liftIntOp (-) (calcExp e1) (calcExp e2)
-  ELessThan e1 e2       -> fail "< not defined"
+  ELessThan e1 e2       -> liftIntOp intLessThan (calcExp e1) (calcExp e2)
   EInteger n            -> return $ VInt n
   EIdent id             -> do
     mExp <- asks $ envLookup id
     case mExp of
       Just exp -> return exp
       Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
+  where intLessThan i1 i2 = toInteger . fromEnum $ i1 < i2
 
 debug :: Show a => a -> MyMonad ()
 debug = liftIO . print
