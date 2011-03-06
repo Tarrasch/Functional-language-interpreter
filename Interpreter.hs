@@ -72,7 +72,7 @@ calcExp e = debugTree e >> case e of
     calcExp (if b /= 0 then e1 else e2)    
   EPlus e1 e2           -> liftIntOp (+) (calcExp e1) (calcExp e2)
   EMinus e1 e2          -> liftIntOp (-) (calcExp e1) (calcExp e2)
-  ELessThan e1 e2       -> fail "< not defined"
+  ELessThan e1 e2       -> liftIntOp intLessThan (calcExp e1) (calcExp e2)
   EInteger n            -> return $ VInt n
   EIdent id             -> do
     mExp <- asks $ envLookup id
@@ -91,7 +91,7 @@ whnf e = case e of
     whnf (if b /= 0 then e1 else e2)    
   EPlus e1 e2           -> liftIntOp' (+) (calcExp e1) (calcExp e2)
   EMinus e1 e2          -> liftIntOp' (-) (calcExp e1) (calcExp e2)
-  ELessThan e1 e2       -> fail "< not defined"
+  ELessThan e1 e2       -> liftIntOp' intLessThan (calcExp e1) (calcExp e2)
   EIdent id             -> do
     mExp <- asks $ envLookup id
     case mExp of
@@ -100,6 +100,9 @@ whnf e = case e of
   integerOrAbstraction  -> return integerOrAbstraction
   
   where liftIntOp' f a b = liftIntOp f a b >>= (\(VInt i) -> return $ EInteger i)
+
+intLessThan :: Integer -> Integer -> Integer
+intLessThan i1 i2 = toInteger . fromEnum $ i1 < i2  
   
 debug :: Show a => a -> MyMonad ()
 debug = liftIO . print
