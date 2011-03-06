@@ -65,7 +65,7 @@ calcExp e = debugTree e >> whnf e >>= \e' -> case e' of
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
     eArg' <- whnf eArg
-    return $ VClojure eBody ((id, eArg) : env') 
+    return $ VClojure eBody ((id, eArg') : env') 
     --local (((id, eArg') : env') ++) (whnf eBody)
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
   EInteger n            -> return $ VInt n
