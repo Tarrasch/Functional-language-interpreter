@@ -43,7 +43,7 @@ liftIntOp :: (Integer -> Integer -> Integer) ->
              (MyMonad Value -> MyMonad Value -> MyMonad Value)
 liftIntOp op mv1 mv2 = do 
   asks (length) >>= debug
-  asks (lookup (Ident "a")) >>= debug
+  asks (lookup (Ident "x")) >>= debug
   i1 <- mv1 >>= calculate   
   i2 <- mv2 >>= calculate   
   return $ VInt $ i1 `op` i2
@@ -85,7 +85,8 @@ whnf :: Exp -> MyMonad Exp
 whnf e = case e of
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
-    local (((id, eArg) : env') ++) (whnf eBody)
+    eArg' <- whnf eArg
+    local (((id, eArg') : env') ++) (whnf eBody)
   EIfElse eCond e1 e2   -> do
     b <- calcExp eCond >>= calculate
     whnf (if b /= 0 then e1 else e2)    
