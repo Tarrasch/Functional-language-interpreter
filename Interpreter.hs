@@ -3,6 +3,7 @@ module Interpreter (interpret) where
 import Control.Monad
 import Control.Monad.State
 import Control.Monad.Reader
+import Data.IORef
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
 
@@ -57,7 +58,12 @@ whnf val = case val of
   (VClojure exp env')        -> local (env'++) $ (calcExp exp) >>= whnf
 
 memorize :: Value -> MyMonad (IO Value)
-memorize = undefined
+memorize val0 = do 
+  currEnv <- ask
+  ioRef <- liftIO $ newIORef val0
+  return $ do val <- readIORef ioRef
+              val' <- whnf 
+    
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
