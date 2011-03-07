@@ -24,9 +24,6 @@ type MyMonad a =  (ReaderT FullEnv
                       IO))
                         a
 
-
-type FullEnv = Env -- remove or fix laater
- 
 type ErrorMessage = String
 
 
