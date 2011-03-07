@@ -1,6 +1,7 @@
 module Env where
 
 import Absgrammar
+import Control.Monad.Instances -- For Functor instance of (,)
 
 
 ------------------------ Notes & Overview ------------------------

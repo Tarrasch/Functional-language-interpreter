@@ -48,10 +48,16 @@ liftIntOp op mv1 mv2 = do
 ----------------------------- Interpreting -------------------------------  
 
 calculate :: Value -> MyMonad Integer
-calculate val = case val of 
-  (VInt i)                   -> return i
-  (VClojure (ELambda _ _) _) -> fail "Can't calculate a lambda abstraction!"
-  (VClojure exp env')        -> local (env'++) $ (calcExp exp) >>= calculate
+calculate val = whnf val >>= \val' -> case val' of 
+    (VInt i) -> return i
+    _        -> fail "Can't calculate a lambda abstraction!"
+
+whnf :: Value -> MyMonad Value
+whnf val = case val of 
+  (VInt i)                   -> return val
+  (VClojure (ELambda _ _) _) -> return val
+  (VClojure exp env')        -> local (env'++) $ (calcExp exp) >>= whnf
+
 
 
 calcExp :: Exp -> MyMonad Value
