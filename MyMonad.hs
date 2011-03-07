@@ -19,7 +19,7 @@ import Control.Monad.Identity
 
 ------------------------ Types ------------------------
 
-type MyMonad a =  (ReaderT FullEnv
+type MyMonad a =  (ReaderT Env
                     (ErrorT ErrorMessage
                       IO))
                         a
