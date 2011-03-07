@@ -27,11 +27,11 @@ import Env
 -- | Interprets a given program. 
 --   The IO contains no side effects, it's safe to use unsafePerformIO on it.
 interpret :: Program -> IO (Either ErrorMessage Integer)
-interpret (Prog defs) = case mainExp of
-                          Just exp -> runMonad env (calculate exp)
-                          Nothing  -> return $ Left "no main is defined"
+interpret (Prog defs) = case mainVal of
+                          Just ioVal -> ioVal >>= (runMonad env . calculate)
+                          Nothing    -> return $ Left "no main is defined"
   where env     = defsToEnvironment defs
-        mainExp = envLookup (Ident "main") env
+        mainVal = envLookup (Ident "main") env
 
 ----------------------------- Value -------------------------------  
 
@@ -64,8 +64,8 @@ calcExp e = case e of
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
-    vArg <- calcExp eArg >>= whnf
-    return $ VClojure eBody ((id, vArg) : env')
+    vIOArg <- memorize (VClojure eArg [])
+    return $ VClojure eBody ((id, vIOArg) : env')
   EIfElse eCond e1 e2   -> do
     b <- calcExp eCond >>= calculate
     calcExp (if b /= 0 then e1 else e2)    
