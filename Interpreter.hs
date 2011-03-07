@@ -42,8 +42,6 @@ liftIntOp op mv1 mv2 = do
   i2 <- mv2 >>= calculate   
   return $ VInt $ i1 `op` i2
  
------------------------------ Substituting -------------------------------  
- 
 
 ----------------------------- Interpreting -------------------------------  
 
@@ -57,6 +55,7 @@ whnf val = case val of
   (VInt i)                   -> return val
   (VClojure (ELambda _ _) _) -> return val
   (VClojure exp env')        -> local (env'++) $ (calcExp exp) >>= whnf
+
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
@@ -73,12 +72,17 @@ calcExp e = case e of
   ELessThan e1 e2       -> liftIntOp' intLessThan e1 e2
   EInteger n            -> return $ VInt n
   EIdent id             -> do
-    mExp <- asks $ envLookup id
-    case mExp of
-      Just exp -> return exp
-      Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
+    mIOVal <- asks $ envLookup id
+    case mIOVal of
+      Just ioVal -> liftIO ioVal 
+      Nothing    -> fail $ "variable " ++ show id ++ " was unbound when looking up"
   where liftIntOp' f e1 e2 = liftIntOp f (calcExp e1) (calcExp e2)
         intLessThan i1 i2 = toInteger . fromEnum $ i1 < i2
+ 
+
+
+ 
+----------------------------- Debugging -------------------------------  
 
 debug :: Show a => a -> MyMonad ()
 debug = liftIO . print
