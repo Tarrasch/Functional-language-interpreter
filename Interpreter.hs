@@ -56,7 +56,7 @@ whnf :: Value -> MyMonad Value
 whnf val = case val of 
   (VInt i)                   -> return val
   (VClojure (ELambda _ _) _) -> return val
-  (VClojure exp env')        -> local (env'++) $ (calcExp exp) >>= whnf
+  (VClojure exp env')        -> local (setLocalBindings env') $ (calcExp exp) >>= whnf
 
 
 
