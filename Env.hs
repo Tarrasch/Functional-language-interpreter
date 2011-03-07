@@ -13,40 +13,41 @@ import Control.Monad.Instances -- For Functor instance of (,)
 
 ------------------------ Types ------------------------
 
-type Env = [(Ident, Value)]
+-- Let first pair be global and second local
+type Env = (SingleEnv, SingleEnv)
 
-data Value = VClojure Exp Env
+type SingleEnv = [(Ident, LookupValue)]
+
+type LookupValue = Value
+
+data Value = VClojure Exp SingleEnv
            | VInt Integer
   deriving Show
 
 ----------------------- Constants ------------------------
 
 emptyEnv :: Env
-emptyEnv = []
+emptyEnv = ([], [])
 
 
 ----------------------- Modifiers ------------------------
 
-addBinding :: Ident -> Value -> Env -> Env
-addBinding x val = ((x, val):)
+setLocalBindings :: SingleEnv -> Env -> Env
+setLocalBindings = fmap . const
 
 
 ----------------------- Queries ------------------------
 
-inScope :: Ident -> Env -> Bool
-inScope x = elem x . map fst
-
-
 -- | Search after a name in all the scopes, if there are more than one variable 
 --   with the same name, the one latest declared is returned.
-envLookup :: Ident -> Env -> Maybe Value
-envLookup = lookup
+envLookup :: Ident -> Env -> Maybe LookupValue
+envLookup id (glob, loc) = lookup id (loc ++ glob)
 
 
 ----------------------- Other ------------------------
 
 defsToEnvironment :: [Def] -> Env
-defsToEnvironment = map (fmap exp2Value . aux)
+defsToEnvironment defs = (map (fmap exp2Value . aux) defs, [])
  where aux :: Def -> (Ident, Exp)
        aux (DefFun fname idents exp0) = (fname, foldr ELambda exp0 idents)
        exp2Value :: Exp -> Value

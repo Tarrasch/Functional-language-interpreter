@@ -65,7 +65,7 @@ calcExp e = case e of
   ELambda id exp        -> return $ VClojure (ELambda id exp) []
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
-    vArg <- calcExp eArg >>= whnf
+    let vArg = VClojure eArg env'
     return $ VClojure eBody ((id, vArg) : env')
   EIfElse eCond e1 e2   -> do
     b <- calcExp eCond >>= calculate
