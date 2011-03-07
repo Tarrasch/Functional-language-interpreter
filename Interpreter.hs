@@ -56,6 +56,8 @@ whnf val = case val of
   (VClojure (ELambda _ _) _) -> return val
   (VClojure exp env')        -> local (env'++) $ (calcExp exp) >>= whnf
 
+memorize :: Value -> MyMonad (IO Value)
+memorize = undefined
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
