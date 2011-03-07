@@ -64,7 +64,7 @@ calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
   ELambda id exp        -> asks getLocalBindings >>= return . VClojure (ELambda id exp)
   EApply eFun eArg      -> do
-    VClojure (ELambda id eBody) env' <- calcExp eFun
+    VClojure (ELambda id eBody) env' <- calcExp eFun >>= whnf
     envLocal <- asks getLocalBindings
     let vArg = VClojure eArg envLocal
     return $ VClojure eBody ((id, vArg) : env')
