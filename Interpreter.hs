@@ -58,8 +58,6 @@ whnf val = case val of
   (VClojure (ELambda _ _) _) -> return val
   (VClojure exp env')        -> local (env'++) $ (calcExp exp) >>= whnf
 
-
-
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
   ELambda id exp        -> return $ VClojure (ELambda id exp) []

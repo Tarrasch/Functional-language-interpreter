@@ -13,11 +13,10 @@ import Control.Monad.Instances -- For Functor instance of (,)
 
 ------------------------ Types ------------------------
 
-type Env = [(Ident, Value)]
+type Env = [(Ident, IO Value)]
 
 data Value = VClojure Exp Env
            | VInt Integer
-  deriving Show
 
 ----------------------- Constants ------------------------
 
@@ -27,7 +26,7 @@ emptyEnv = []
 
 ----------------------- Modifiers ------------------------
 
-addBinding :: Ident -> Value -> Env -> Env
+addBinding :: Ident -> IO Value -> Env -> Env
 addBinding x val = ((x, val):)
 
 
@@ -39,14 +38,14 @@ inScope x = elem x . map fst
 
 -- | Search after a name in all the scopes, if there are more than one variable 
 --   with the same name, the one latest declared is returned.
-envLookup :: Ident -> Env -> Maybe Value
+envLookup :: Ident -> Env -> Maybe (IO Value)
 envLookup = lookup
 
 
 ----------------------- Other ------------------------
 
 defsToEnvironment :: [Def] -> Env
-defsToEnvironment = map (fmap exp2Value . aux)
+defsToEnvironment = map (fmap (return . exp2Value) . aux)
  where aux :: Def -> (Ident, Exp)
        aux (DefFun fname idents exp0) = (fname, foldr ELambda exp0 idents)
        exp2Value :: Exp -> Value
