@@ -35,6 +35,9 @@ emptyEnv = ([], [])
 setLocalBindings :: SingleEnv -> Env -> Env
 setLocalBindings = fmap . const
 
+getLocalBindings :: Env -> SingleEnv
+getLocalBindings = snd
+
 
 ----------------------- Queries ------------------------
 
