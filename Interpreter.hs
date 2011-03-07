@@ -62,10 +62,11 @@ whnf val = case val of
 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
-  ELambda id exp        -> return $ VClojure (ELambda id exp) []
+  ELambda id exp        -> asks getLocalBindings >>= return . VClojure (ELambda id exp)
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun
-    let vArg = VClojure eArg env'
+    envLocal <- asks getLocalBindings
+    let vArg = VClojure eArg envLocal
     return $ VClojure eBody ((id, vArg) : env')
   EIfElse eCond e1 e2   -> do
     b <- calcExp eCond >>= calculate
