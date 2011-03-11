@@ -44,7 +44,7 @@ liftIntOp op mv1 mv2 = do
  
 ----------------------------- Substituting -------------------------------  
  
- 
+
 ----------------------------- Interpreting -------------------------------  
 
 calculate :: Value -> MyMonad Integer
