@@ -24,12 +24,12 @@ debug s = do d <- readIORef doDebug
              if d then putStrLn s else return ()
 
 
-listGoodProgs = listFunFiles "good"
+listGoodProgs = listCCFiles "good"
 
-listBadProgs = listFunFiles "bad"
+listBadProgs = listCCFiles "bad"
 
-listFunFiles dir = 
-    liftM (map (\f -> joinPath [dir,f]) . sort . filter ((=="fun") . getExt)) $ getDirectoryContents dir
+listCCFiles dir = 
+    liftM (map (\f -> joinPath [dir,f]) . sort . filter ((=="cc") . getExt)) $ getDirectoryContents dir
 
 
 welcome :: IO ()
