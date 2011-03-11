@@ -11,6 +11,7 @@ import Lexgrammar
 import Pargrammar
 import Printgrammar
 
+import Data.IORef
 import MyMonad
 import Env
 
@@ -27,11 +28,12 @@ import Env
 -- | Interprets a given program. 
 --   The IO contains no side effects, it's safe to use unsafePerformIO on it.
 interpret :: Program -> IO (Either ErrorMessage Integer)
-interpret (Prog defs) = case mainExp of
-                          Just exp -> runMonad env (calculate exp)
-                          Nothing  -> return $ Left "no main is defined"
-  where env     = defsToEnvironment defs
-        mainExp = envLookup (Ident "main") env
+interpret (Prog defs) = do 
+       env <- defsToEnvironment defs
+       let mainExp = envLookup (Ident "main") env
+       case mainExp of
+         Just ioExp -> readIORef ioExp >>= \exp -> runMonad env (calculate exp)
+         Nothing    -> return $ Left "no main is defined"
 
 ----------------------------- Value -------------------------------  
 
