@@ -1,15 +1,15 @@
 all:
-	bnfc CPP.cf
-	happy -gca ParCPP.y
-	alex -g LexCPP.x
+	bnfc grammar.cf
+	happy -gca Pargrammar.y
+	alex -g Lexgrammar.x
 	ghc --make lab4.hs -o lab4
 
 clean:
 	-rm -f lab2
 	-rm -f *.log *.aux *.hi *.o *.dvi
-	-rm -f DocCPP.ps
+	-rm -f Docgrammar.ps
 
 distclean: clean
-	-rm -f DocCPP.* LexCPP.* ParCPP.* LayoutCPP.* SkelCPP.* PrintCPP.* TestCPP.* AbsCPP.* TestCPP ErrM.* SharedString.* CPP.dtd XMLCPP.*
+	-rm -f Docgrammar.* Lexgrammar.* Pargrammar.* Layoutgrammar.* Skelgrammar.* Printgrammar.* Testgrammar.* Absgrammar.* Testgrammar ErrM.* SharedString.* grammar.dtd XMLgrammar.* *.o *.tex *grammmar.txt
 
 

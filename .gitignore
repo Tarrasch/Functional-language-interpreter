@@ -1,3 +1,9 @@
 dirty/*
 makehere/*
-
+*grammar.hs
+*.hi
+*.hs
+*.o
+*.tex
+*grammar*
+!grammar.cf

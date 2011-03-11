@@ -10,6 +10,6 @@ clean:
 	-rm -f Docgrammar.ps
 
 distclean: clean
-	-rm -f Docgrammar.* Lexgrammar.* Pargrammar.* Layoutgrammar.* Skelgrammar.* Printgrammar.* Testgrammar.* Absgrammar.* Testgrammar ErrM.* SharedString.* grammar.dtd XMLgrammar.*
+	-rm -f Docgrammar.* Lexgrammar.* Pargrammar.* Layoutgrammar.* Skelgrammar.* Printgrammar.* Testgrammar.* Absgrammar.* Testgrammar ErrM.* SharedString.* grammar.dtd XMLgrammar.* *.o *.tex *grammmar.txt *.hi
 
 
