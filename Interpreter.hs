@@ -35,33 +35,26 @@ interpret (Prog defs) = do
          Just ioExp -> readIORef ioExp >>= \exp -> runMonad env (calculate exp)
          Nothing    -> return $ Left "no main is defined"
 
------------------------------ Value -------------------------------  
-
-liftIntOp :: (Integer -> Integer -> Integer) -> 
-             (MyMonad Value -> MyMonad Value -> MyMonad Value)
-liftIntOp op mv1 mv2 = do 
-  i1 <- mv1 >>= calculate   
-  i2 <- mv2 >>= calculate   
-  return $ VInt $ i1 `op` i2
- 
------------------------------ Substituting -------------------------------  
- 
  
 ----------------------------- Interpreting -------------------------------  
 
+-- Calculate a value that is expected to be an integer
 calculate :: Value -> MyMonad Integer
 calculate val = whnf val >>= \val' -> case val' of 
     (VInt i) -> return i
     _        -> fail "Can't calculate a lambda abstraction!"
 
+-- Calculate down a value to either an Integer or a lambda abstraction
 whnf :: Value -> MyMonad Value
 whnf val = case val of 
   (VInt i)                   -> return val
   (VClojure (ELambda _ _) _) -> return val
-  (VClojure exp env')        -> local (setLocalBindings env') $ (calcExp exp) >>= whnf
+  (VClojure exp env')        -> local (setLocalBindings env') $
+                                  (calcExp exp) >>= whnf
 
 
-
+-- Reduce an expression, however not neccesarily to weak head normal form.
+-- More specificallt it can return a closure that can be reduced further. 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
   ELambda id exp        -> asks getLocalBindings >>= return . VClojure (ELambda id exp)
@@ -88,6 +81,19 @@ calcExp e = case e of
       Nothing    -> fail $ "variable " ++ show id ++ " was unbound when looking up"
   where liftIntOp' f e1 e2 = liftIntOp f (calcExp e1) (calcExp e2)
         intLessThan i1 i2 = toInteger . fromEnum $ i1 < i2
+
+
+----------------------------- Other -------------------------------  
+
+liftIntOp :: (Integer -> Integer -> Integer) -> 
+             (MyMonad Value -> MyMonad Value -> MyMonad Value)
+liftIntOp op mv1 mv2 = do 
+  i1 <- mv1 >>= calculate   
+  i2 <- mv2 >>= calculate   
+  return $ VInt $ i1 `op` i2
+ 
+ 
+----------------------------- Debugging (unused) -------------------------------  
 
 debug :: Show a => a -> MyMonad ()
 debug = liftIO . print
