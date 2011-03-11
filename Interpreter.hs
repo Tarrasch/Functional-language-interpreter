@@ -80,8 +80,12 @@ calcExp e = case e of
   EIdent id             -> do
     mExp <- asks $ envLookup id
     case mExp of
-      Just exp -> return exp
-      Nothing  -> fail $ "variable " ++ show id ++ " was unbound when looking up"
+      Just ioExp -> do
+       exp <- liftIO $ readIORef ioExp
+       exp' <- whnf exp
+       liftIO $ writeIORef ioExp exp'
+       return exp'
+      Nothing    -> fail $ "variable " ++ show id ++ " was unbound when looking up"
   where liftIntOp' f e1 e2 = liftIntOp f (calcExp e1) (calcExp e2)
         intLessThan i1 i2 = toInteger . fromEnum $ i1 < i2
 
