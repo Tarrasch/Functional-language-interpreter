@@ -42,7 +42,7 @@ runMake dir = do checkDirectoryExists dir
 
 runMakeClean :: FilePath -> IO ()
 runMakeClean dir = do checkDirectoryExists dir
-                      runCommandNoFail_ ("make clean " ++ quote dir) ""
+                      runCommandNoFail_ ("make -C " ++ quote dir) ""
 
 runTests :: FilePath -> IO ([Bool],[Bool])
 runTests dir = 
