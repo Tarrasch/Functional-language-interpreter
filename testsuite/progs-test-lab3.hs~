@@ -24,12 +24,12 @@ debug s = do d <- readIORef doDebug
              if d then putStrLn s else return ()
 
 
-listGoodProgs = listCCFiles "good"
+listGoodProgs = listFunFiles "good"
 
-listBadProgs = listCCFiles "bad"
+listBadProgs = listFunFiles "bad"
 
-listCCFiles dir = 
-    liftM (map (\f -> joinPath [dir,f]) . sort . filter ((=="cc") . getExt)) $ getDirectoryContents dir
+listFunFiles dir = 
+    liftM (map (\f -> joinPath [dir,f]) . sort . filter ((=="fun") . getExt)) $ getDirectoryContents dir
 
 
 welcome :: IO ()
@@ -42,7 +42,7 @@ runMake dir = do checkDirectoryExists dir
 
 runTests :: FilePath -> IO ([Bool],[Bool])
 runTests dir = 
-    do let prog = joinPath [dir,"lab3"]
+    do let prog = joinPath [dir,"lab4"]
        checkFileExists prog
        goodProgs <- listGoodProgs
        badProgs  <- listBadProgs

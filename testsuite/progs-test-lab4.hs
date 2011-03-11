@@ -42,7 +42,7 @@ runMake dir = do checkDirectoryExists dir
 
 runTests :: FilePath -> IO ([Bool],[Bool])
 runTests dir = 
-    do let prog = joinPath [dir,"lab3"]
+    do let prog = joinPath [dir,"lab4"]
        checkFileExists prog
        goodProgs <- listGoodProgs
        badProgs  <- listBadProgs
@@ -75,7 +75,7 @@ parseArgs ["-debug",cfFile] =
     do writeIORef doDebug True
        return cfFile
 parseArgs [cfFile] = return cfFile
-parseArgs _ = do hPutStrLn stderr "Usage: progs-test-lab3 <interpreter code directory>"
+parseArgs _ = do hPutStrLn stderr "Usage: progs-test-lab4 <interpreter code directory>"
                  exitFailure
 
 mainOpts :: FilePath -> IO ()
