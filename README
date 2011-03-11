@@ -3,3 +3,7 @@ My interpreter:
 	* Uses call by need using IORefs
 	* Does do textual lookups, not Bruindin indices.
 	* Carries one global (constant) and one local environment
+	* Is tested by an automatic test suite:
+		 The suite is stolen from lab3. How to run it and what it
+		 produces is recorded in the Transcript file
+		 (Running it manually is recommended so you get colors)
