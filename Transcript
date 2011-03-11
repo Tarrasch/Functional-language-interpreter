@@ -1,0 +1,93 @@
+rarash@nc-2504-03:~/Programsprak/Functional-language-interpreter/testsuite$ ./progs-test-lab4 ../
+This is the test program for Programming Languages Lab 3
+Running make -C '../' ...
+Running good/good1.fun...
+Running good/good2.fun...
+Running good/good3.fun...
+Running good/good4.fun...
+Running good/good5.fun...
+Running good/good6.fun...
+Running good/good7.fun...
+Running good/good8.fun...
+Running bad/bad1.fun...
+..//lab4 bad/bad1.fun failed: invalid output
+For input file bad/bad1.fun:
+---------------- begin bad/bad1.fun ------------------
+mult x y = 
+    if (y < 1) then 0 else if (y < 2) then x else (x + (mult x (y-1))) ; 
+fact = \x -> if (x < 3) then x else mul x (fact (x-1)) ; -- unknown mul
+main = fact 6 ;
+
+----------------- end bad/bad1.fun -------------------
+It printed this to standard output:
+ERROR, gave message:
+variable Ident "mul" was unbound when looking up
+
+Expected output:
+
+Running bad/bad2.fun...
+..//lab4 bad/bad2.fun failed: invalid output
+For input file bad/bad2.fun:
+---------------- begin bad/bad2.fun ------------------
+mult x y = 
+    if (y < 1) then 0 else if (y < 2) then x else (x + (mult x (y-1))) ; 
+fact = \x -> if (x < 3) then x else mult x (fact (x-1)) ;
+mainz = fact 6 ;
+-- no main
+
+----------------- end bad/bad2.fun -------------------
+It printed this to standard output:
+ERROR, gave message:
+no main is defined
+
+Expected output:
+
+Running bad/bad3.fun...
+..//lab4 bad/bad3.fun failed: invalid output
+For input file bad/bad3.fun:
+---------------- begin bad/bad3.fun ------------------
+f x = x + x ;
+main = f + f ;  -- operator + not defined for functions
+
+----------------- end bad/bad3.fun -------------------
+It printed this to standard output:
+ERROR, gave message:
+Can't calculate a lambda abstraction!
+
+Expected output:
+
+Running bad/bad4.fun...
+..//lab4 bad/bad4.fun failed: invalid output
+For input file bad/bad4.fun:
+---------------- begin bad/bad4.fun ------------------
+church0 = \f -> \x -> x ;
+churchS = \n -> \f -> \x -> f (n f x) ;
+church2int n = n (\i -> i + 1) 0 ;
+int2church i = if (i < 1) then church0 else churchS (int2church (i-1)) ;
+main = int2church 8 ;  
+-- the result is a function or closure; this can be printed as an expression,
+-- but should be reported as a run-time type error because main must return an
+-- integer according to PM
+
+
+
+
+
+----------------- end bad/bad4.fun -------------------
+It printed this to standard output:
+ERROR, gave message:
+Can't calculate a lambda abstraction!
+
+Expected output:
+
+
+------------------------------------------------------------
+Good programs: passed 8 of 8 tests
+Bad programs:  passed 0 of 4 tests
+Running make clean '../' ...
+make clean '../' failed: with status 2
+It printed this to standard error:
+make: *** No rule to make target `clean'.  Stop.
+
+rarash@nc-2504-03:~/Programsprak/Functional-language-interpreter/testsuite$ 
+
