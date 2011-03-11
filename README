@@ -3,5 +3,3 @@ My interpreter:
 	* Uses call by need using IORefs
 	* Does do textual lookups, not Bruindin indices.
 	* Carries one global (constant) and one local environment
-
-I've implemented call-by-need

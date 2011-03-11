@@ -50,6 +50,9 @@ envLookup id (glob, loc) = lookup id (loc ++ glob)
 
 ----------------------- Other ------------------------
 
+-- | Given the definitions (global functions) of the program,
+--   creates the global environment. This function needs IO
+--   side effects as it is creating IORefs
 defsToEnvironment :: [Def] -> IO Env
 defsToEnvironment defs = liftM2 (,) (liftM2 zip leftList rightList) (return [])
  where auxId :: Def -> Ident
