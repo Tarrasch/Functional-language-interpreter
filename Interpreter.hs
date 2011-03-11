@@ -57,7 +57,8 @@ whnf val = case val of
 -- More specificallt it can return a closure that can be reduced further. 
 calcExp :: Exp -> MyMonad Value
 calcExp e = case e of
-  ELambda id exp        -> asks getLocalBindings >>= return . VClojure (ELambda id exp)
+  ELambda id exp        -> return . VClojure (ELambda id exp)
+                             =<< asks getLocalBindings  
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun >>= whnf
     envLocal <- asks getLocalBindings
@@ -78,7 +79,9 @@ calcExp e = case e of
        exp' <- whnf exp
        liftIO $ writeIORef ioExp exp'
        return exp'
-      Nothing    -> fail $ "variable " ++ show id ++ " was unbound when looking up"
+      Nothing    -> fail $ "variable " 
+                        ++ show id
+                        ++ " was unbound when looking up"
   where liftIntOp' f e1 e2 = liftIntOp f (calcExp e1) (calcExp e2)
         intLessThan i1 i2 = toInteger . fromEnum $ i1 < i2
 
