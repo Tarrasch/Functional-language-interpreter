@@ -1,6 +1,8 @@
 module Env where
 
 import Absgrammar
+import Data.IORef
+import Control.Monad
 import Control.Monad.Instances -- For Functor instance of (,)
 
 
@@ -18,11 +20,10 @@ type Env = (SingleEnv, SingleEnv)
 
 type SingleEnv = [(Ident, LookupValue)]
 
-type LookupValue = Value
+type LookupValue = IORef Value
 
 data Value = VClojure Exp SingleEnv
            | VInt Integer
-  deriving Show
 
 ----------------------- Constants ------------------------
 
@@ -49,9 +50,15 @@ envLookup id (glob, loc) = lookup id (loc ++ glob)
 
 ----------------------- Other ------------------------
 
-defsToEnvironment :: [Def] -> Env
-defsToEnvironment defs = (map (fmap exp2Value . aux) defs, [])
- where aux :: Def -> (Ident, Exp)
-       aux (DefFun fname idents exp0) = (fname, foldr ELambda exp0 idents)
-       exp2Value :: Exp -> Value
-       exp2Value exp = VClojure exp []
+defsToEnvironment :: [Def] -> IO Env
+defsToEnvironment defs = liftM2 (,) (liftM2 zip leftList rightList) (return [])
+ where auxId :: Def -> Ident
+       auxId (DefFun fname idents exp0) = fname
+       auxExp :: Def -> Exp
+       auxExp (DefFun fname idents exp0) = foldr ELambda exp0 idents
+       exp2Value :: Exp -> IO LookupValue
+       exp2Value exp = newIORef $ VClojure exp []
+       leftList :: IO [Ident]
+       leftList  = return $ map auxId defs
+       rightList :: IO [LookupValue]
+       rightList = mapM (exp2Value . auxExp) defs
