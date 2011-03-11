@@ -5,5 +5,7 @@ makehere/*
 *.hs
 *.o
 *.tex
+*.swp
 *grammar*
 !grammar.cf
+testsuite/progs-test-lab4
