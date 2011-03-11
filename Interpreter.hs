@@ -68,7 +68,7 @@ calcExp e = case e of
   EApply eFun eArg      -> do
     VClojure (ELambda id eBody) env' <- calcExp eFun >>= whnf
     envLocal <- asks getLocalBindings
-    let vArg = VClojure eArg envLocal
+    vArg <- liftIO . newIORef $  VClojure eArg envLocal
     return $ VClojure eBody ((id, vArg) : env')
   EIfElse eCond e1 e2   -> do
     b <- calcExp eCond >>= calculate
