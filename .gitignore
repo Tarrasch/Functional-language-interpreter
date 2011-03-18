@@ -12,3 +12,4 @@ testsuite/progs-test-lab4
 lab4
 *.bak
 *~
+._*

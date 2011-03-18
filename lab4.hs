@@ -41,4 +41,4 @@ main = do args <- getArgs
             ["-n", file] -> readFile file >>= check
             ["-v", file] -> readFile file >>= check
             _            -> do putStrLn "Usage: lab4 (-n|-v) <File>"
-                           exitFailure
+                               exitFailure
