@@ -37,6 +37,7 @@ check s = case pProgram (myLexer s) of
 main :: IO ()
 main = do args <- getArgs
           case args of
-            [file] -> readFile file >>= check
+            ["-n", file] -> readFile file >>= check
+            ["-v", file] -> readFile file >>= check
             _      -> do putStrLn "Usage: lab4 (-n|-v) <File>"
                          exitFailure
