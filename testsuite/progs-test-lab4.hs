@@ -1,5 +1,7 @@
 {-# OPTIONS_GHC -cpp #-}
 
+-- ghc -threaded --make -o progs-test-lab4 progs-test-lab4.hs
+
 -- GHC needs -threaded
 
 import Control.Concurrent
